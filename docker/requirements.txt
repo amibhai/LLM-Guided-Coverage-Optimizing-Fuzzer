@@ -1,0 +1,6 @@
+# Runtime deps inside the fuzzing container. Deliberately minimal: everything
+# here is imported by a process that runs alongside afl-fuzz, and the analysis
+# stack (pandas/matplotlib) is installed on the host instead so it can never
+# perturb a measurement.
+anthropic>=0.69.0
+PyYAML>=6.0

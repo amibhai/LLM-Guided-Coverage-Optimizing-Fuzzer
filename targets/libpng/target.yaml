@@ -1,0 +1,38 @@
+# Target metadata. The experiment runner reads this; nothing is hardcoded in
+# the harness, so adding a target is a directory plus this file plus build.sh.
+name: libpng
+description: >
+  libpng 1.6.37 via the upstream OSS-Fuzz read harness. Chosen for the pilot
+  because it builds in a few minutes, executes fast enough (~10-50k execs/s
+  persistent mode) that an hour-long trial is statistically meaningful, and has
+  a well-studied coverage profile to sanity-check our numbers against.
+
+upstream:
+  repo: https://github.com/glennrp/libpng.git
+  commit: f5e92d76973a7255d31d0ed8c1c2b53868cf5e10   # v1.6.37
+  harness: contrib/oss-fuzz/libpng_read_fuzzer.cc
+
+build:
+  script: build.sh
+  variants: [fuzz, cov, asan]
+
+run:
+  binary: build/fuzz/libpng_fuzzer
+  cov_binary: build/cov/libpng_fuzzer
+  asan_binary: build/asan/libpng_fuzzer
+  edge_ids: build/fuzz/edge_ids.txt
+  seeds: build/seeds
+  dict: build/png.dict
+  # Input arrives as a file argument (@@), matching the driver's non-persistent
+  # path; AFL++ uses shared memory in persistent mode regardless.
+  args: ["@@"]
+  timeout_ms: 1000
+  mem_limit: none
+
+# Ground truth. libpng 1.6.37 has no Magma-style seeded bugs, so the pilot is
+# scored on coverage only; crash counts here are opportunistic, not the metric.
+# Magma targets (libtiff, libxml2) come next and do carry seeded bugs -- see
+# README "Scaling up".
+ground_truth:
+  seeded_bugs: false
+  note: coverage-only target; use Magma targets for bug-finding claims

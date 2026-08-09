@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Build artefacts and fetched sources — reproduced by targets/*/build.sh
+targets/*/build/
+targets/*/src/
+
+# Run outputs. results/ holds the committed, analysed summaries; raw AFL++
+# output directories are large and regenerable, so they stay out of git.
+results/**/out/
+results/**/queue/
+results/**/*.jsonl
+!results/.gitkeep
+
+.env
